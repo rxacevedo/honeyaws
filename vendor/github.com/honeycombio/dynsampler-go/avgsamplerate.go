@@ -1,8 +1,6 @@
 package dynsampler
 
 import (
-	"encoding/json"
-	"errors"
 	"math"
 	"sort"
 	"sync"
@@ -27,12 +25,6 @@ type AvgSampleRate struct {
 	// events. Default 10
 	GoalSampleRate int
 
-	// MaxKeys, if greater than 0, limits the number of distinct keys used to build
-	// the sample rate map within the interval defined by `ClearFrequencySec`. Once
-	// MaxKeys is reached, new keys will not be included in the sample rate map, but
-	// existing keys will continue to be be counted.
-	MaxKeys int
-
 	savedSampleRates map[string]int
 	currentCounts    map[string]int
 
@@ -54,10 +46,7 @@ func (a *AvgSampleRate) Start() error {
 	}
 
 	// initialize internal variables
-	// Create saved sample rate map if we're not loading from a previous state
-	if a.savedSampleRates == nil {
-		a.savedSampleRates = make(map[string]int)
-	}
+	a.savedSampleRates = make(map[string]int)
 	a.currentCounts = make(map[string]int)
 
 	// spin up calculator
@@ -136,15 +125,7 @@ func (a *AvgSampleRate) updateMaps() {
 		} else {
 			// there are more samples than the allotted number. Sample this key enough
 			// to knock it under the limit (aka round up)
-			rate := math.Ceil(count / goalForKey)
-			// if counts are <= 1 we can get values for goalForKey that are +Inf
-			// and subsequent division ends up with NaN. If that's the case,
-			// fall back to 1
-			if math.IsNaN(rate) {
-				newSavedSampleRates[key] = 1
-			} else {
-				newSavedSampleRates[key] = int(rate)
-			}
+			newSavedSampleRates[key] = int(math.Ceil(count / goalForKey))
 			extra += goalForKey - (count / float64(newSavedSampleRates[key]))
 		}
 	}
@@ -159,16 +140,7 @@ func (a *AvgSampleRate) updateMaps() {
 func (a *AvgSampleRate) GetSampleRate(key string) int {
 	a.lock.Lock()
 	defer a.lock.Unlock()
-
-	// Enforce MaxKeys limit on the size of the map
-	if a.MaxKeys > 0 {
-		// If a key already exists, increment it. If not, but we're under the limit, store a new key
-		if _, found := a.currentCounts[key]; found || len(a.currentCounts) < a.MaxKeys {
-			a.currentCounts[key]++
-		}
-	} else {
-		a.currentCounts[key]++
-	}
+	a.currentCounts[key]++
 	if !a.haveData {
 		return a.GoalSampleRate
 	}
@@ -176,41 +148,4 @@ func (a *AvgSampleRate) GetSampleRate(key string) int {
 		return rate
 	}
 	return 1
-}
-
-type avgSampleRateState struct {
-	// This field is exported for use by `JSON.Marshal` and `JSON.Unmarshal`
-	SavedSampleRates map[string]int `json:"saved_sample_rates"`
-}
-
-// SaveState returns a byte array with a JSON representation of the sampler state
-func (a *AvgSampleRate) SaveState() ([]byte, error) {
-	a.lock.Lock()
-	defer a.lock.Unlock()
-
-	if a.savedSampleRates == nil {
-		return nil, errors.New("saved sample rate map is nil")
-	}
-	s := &avgSampleRateState{SavedSampleRates: a.savedSampleRates}
-	return json.Marshal(s)
-}
-
-// LoadState accepts a byte array with a JSON representation of a previous instance's
-// state
-func (a *AvgSampleRate) LoadState(state []byte) error {
-	a.lock.Lock()
-	defer a.lock.Unlock()
-
-	s := avgSampleRateState{}
-	err := json.Unmarshal(state, &s)
-	if err != nil {
-		return err
-	}
-
-	// Load the previously calculated sample rates
-	a.savedSampleRates = s.SavedSampleRates
-	// Allow GetSampleRate to return calculated sample rates from the loaded map
-	a.haveData = true
-
-	return nil
 }

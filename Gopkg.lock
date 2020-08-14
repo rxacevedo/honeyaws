@@ -2,12 +2,7 @@
 
 
 [[projects]]
-  name = "github.com/Sirupsen/logrus"
-  packages = ["."]
-  revision = "f006c2ac4710855cf0f916dd6b77acf6b048dc6e"
-  version = "v1.0.3"
-
-[[projects]]
+  digest = "1:af64add4994188b25f26a72fddc1624e37c7a96556964741801021b57e78d974"
   name = "github.com/aws/aws-sdk-go"
   packages = [
     "aws",
@@ -46,101 +41,156 @@
     "service/s3",
     "service/s3/s3iface",
     "service/s3/s3manager",
-    "service/sts"
+    "service/sts",
   ]
+  pruneopts = "UT"
   revision = "64aa9485bf77b8a811e88e95060a4a049bb373fb"
   version = "v1.13.37"
 
 [[projects]]
   branch = "master"
+  digest = "1:5fe3f6ede1c208a2efd3b78fe4df0306aa9624edd39476143d14f0326e5a8d29"
   name = "github.com/facebookgo/clock"
   packages = ["."]
+  pruneopts = "UT"
   revision = "600d898af40aa09a7a93ecb9265d87b0504b6f03"
 
 [[projects]]
   branch = "master"
+  digest = "1:3b9db7dec579a1b2385b8de0b9359c052b1ba815d283dcf28d7270d0e7c38237"
   name = "github.com/facebookgo/limitgroup"
   packages = ["."]
+  pruneopts = "UT"
   revision = "6abd8d71ec01451d7f1929eacaa263bbe2935d05"
 
 [[projects]]
   branch = "master"
+  digest = "1:94b198563e9ee4272105ad87ae469b216cafb9437b955ae866ce85b956569aac"
   name = "github.com/facebookgo/muster"
   packages = ["."]
+  pruneopts = "UT"
   revision = "fd3d7953fd52354a74b9f6b3d70d0c9650c4ec2a"
 
 [[projects]]
+  digest = "1:4afe9b10ebaf13d77f8bad44b2af5a55c17699b375601a6383a671b0713845b9"
   name = "github.com/go-ini/ini"
   packages = ["."]
+  pruneopts = "UT"
   revision = "6529cf7c58879c08d927016dde4477f18a0634cb"
   version = "v1.36.0"
 
 [[projects]]
+  digest = "1:dea4ede541179741156c2d68ce55b5208af80ed8fcba865b2f91e32172d52172"
   name = "github.com/honeycombio/dynsampler-go"
   packages = ["."]
+  pruneopts = "UT"
   revision = "c043ccf54256cf62f57b21d37306a8d482e97d54"
 
 [[projects]]
   branch = "master"
+  digest = "1:5c1e9bf7b2b5eab0bbd68772d43a61a88d19e1351b072235f4ca8cddfeaa5d51"
   name = "github.com/honeycombio/gonx"
   packages = ["."]
+  pruneopts = "UT"
   revision = "7443e4e8f28c532499bc468e5089341f3094ecea"
 
 [[projects]]
-  branch = "master"
+  digest = "1:b2effc5c8ceb15063e49e72f755371e7c48bc061df9c58126f0861afb48d69ae"
   name = "github.com/honeycombio/honeytail"
   packages = [
     "event",
     "httime",
     "parsers",
-    "parsers/nginx"
+    "parsers/nginx",
   ]
-  revision = "6af0f50b4c48af4980a71be851481a4ebd16669d"
+  pruneopts = "UT"
+  revision = "2c5f5ac1059e5168e64a77eae28f61c87e9b875c"
+  version = "v1.1.4"
 
 [[projects]]
+  digest = "1:58ee9d34419be621505dab85377f354ecc61f260a4b5aabe057eaf12c7d44e87"
   name = "github.com/honeycombio/libhoney-go"
   packages = ["."]
+  pruneopts = "UT"
   revision = "1782b3ea9b57603d943377079c2c7151049b1448"
 
 [[projects]]
   branch = "master"
+  digest = "1:5a38abb7f0fb96a5274489b4fd6252687be0db67584658e400f2050fa6bb2976"
   name = "github.com/honeycombio/urlshaper"
   packages = ["."]
+  pruneopts = "UT"
   revision = "2baba9ae5b5faed757d6e4d66054967824a0a1b1"
 
 [[projects]]
+  digest = "1:1b626a9a3dc9490e97cf64bd3eba87da729b95be0383dda9d0d59fd8ba5da3cf"
   name = "github.com/jessevdk/go-flags"
   packages = ["."]
+  pruneopts = "UT"
   revision = "96dc06278ce32a0e9d957d590bb987c81ee66407"
   version = "v1.3.0"
 
 [[projects]]
+  digest = "1:e22af8c7518e1eab6f2eab2b7d7558927f816262586cd6ed9f349c97a6c285c4"
   name = "github.com/jmespath/go-jmespath"
   packages = ["."]
+  pruneopts = "UT"
   revision = "0b12d6b5"
 
 [[projects]]
-  name = "golang.org/x/crypto"
-  packages = ["ssh/terminal"]
-  revision = "b176d7def5d71bdd214203491f89843ed217f420"
+  digest = "1:09cb61dc19af93deae01587e2fdb1c081e0bf48f1a5ad5fa24f48750dc57dce8"
+  name = "github.com/konsorten/go-windows-terminal-sequences"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "edb144dfd453055e1e49a3d8b410a660b5a87613"
+  version = "v1.0.3"
 
 [[projects]]
+  digest = "1:05eebdd5727fea23083fce0d98d307d70c86baed644178e81608aaa9f09ea469"
+  name = "github.com/sirupsen/logrus"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "60c74ad9be0d874af0ab0daef6ab07c5c5911f0d"
+  version = "v1.6.0"
+
+[[projects]]
+  digest = "1:5f34584483e49f034e53b23fb6a0ae54dd17ffcbefa42d0e353af76345e982f8"
   name = "golang.org/x/sys"
-  packages = [
-    "unix",
-    "windows"
-  ]
+  packages = ["unix"]
+  pruneopts = "UT"
   revision = "9f7170bcd8e9f4d3691c06401119c46a769a1e03"
 
 [[projects]]
+  digest = "1:38b469493eb173db9c03321d64adcad4c7991ea0a19b5edc5bdc094f0e8c7384"
   name = "gopkg.in/alexcesaro/statsd.v2"
   packages = ["."]
+  pruneopts = "UT"
   revision = "7fea3f0d2fab1ad973e641e51dba45443a311a90"
   version = "v2.0.0"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "0360319ff7ecf75d7033cc23c503d5290164c33eeeb71abde7503404d9a6a0c6"
+  input-imports = [
+    "github.com/aws/aws-sdk-go/aws",
+    "github.com/aws/aws-sdk-go/aws/awserr",
+    "github.com/aws/aws-sdk-go/aws/session",
+    "github.com/aws/aws-sdk-go/service/cloudfront",
+    "github.com/aws/aws-sdk-go/service/cloudtrail",
+    "github.com/aws/aws-sdk-go/service/dynamodb",
+    "github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute",
+    "github.com/aws/aws-sdk-go/service/elb",
+    "github.com/aws/aws-sdk-go/service/elbv2",
+    "github.com/aws/aws-sdk-go/service/s3",
+    "github.com/aws/aws-sdk-go/service/s3/s3manager",
+    "github.com/aws/aws-sdk-go/service/sts",
+    "github.com/honeycombio/dynsampler-go",
+    "github.com/honeycombio/honeytail/event",
+    "github.com/honeycombio/honeytail/parsers/nginx",
+    "github.com/honeycombio/libhoney-go",
+    "github.com/honeycombio/urlshaper",
+    "github.com/jessevdk/go-flags",
+    "github.com/sirupsen/logrus",
+  ]
   solver-name = "gps-cdcl"
   solver-version = 1

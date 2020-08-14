@@ -10,7 +10,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 	"github.com/honeycombio/gonx"
 
 	"github.com/honeycombio/honeytail/event"
@@ -172,6 +172,10 @@ func (n *Parser) getTimestamp(evMap map[string]interface{}) time.Time {
 
 	if _, ok := evMap["time_iso8601"]; ok {
 		return httime.GetTimestamp(evMap, "time_iso8601", iso8601TimeLayout)
+	}
+
+	if _, ok := evMap["msec"]; ok {
+		return httime.GetTimestamp(evMap, "msec", "")
 	}
 
 	return httime.GetTimestamp(evMap, "", "")
