@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 	"github.com/honeycombio/honeyaws/options"
 	"github.com/honeycombio/honeyaws/state"
 	"github.com/honeycombio/honeytail/event"
@@ -112,7 +112,7 @@ func NewHoneycombPublisher(opt *options.Options, stater state.Stater, eventParse
 		}
 		libhoney.Init(hnyCfg)
 		libhoneyInitialized = true
-		if err := libhoney.VerifyWriteKey(hnyCfg); err != nil {
+		if _, err := libhoney.VerifyAPIKey(hnyCfg); err != nil {
 			logrus.Fatal("Could not validate write key Honeycomb. Please double check your write key and try again.")
 		}
 	}
