@@ -6,7 +6,6 @@ import (
 	"os/signal"
 	"time"
 
-	"github.com/sirupsen/logrus"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/elbv2"
@@ -16,6 +15,7 @@ import (
 	"github.com/honeycombio/honeyaws/state"
 	libhoney "github.com/honeycombio/libhoney-go"
 	flag "github.com/jessevdk/go-flags"
+	"github.com/sirupsen/logrus"
 )
 
 var (
@@ -61,9 +61,17 @@ func cmdALB(args []string) error {
 			return nil
 
 		case "ingest":
-			if opt.WriteKey == "" {
-				logrus.Fatal(`--writekey must be set to the proper write key for the Honeycomb team.
-Your write key is available at https://ui.honeycomb.io/account`)
+			if opt.GrafanaCloudID == "" {
+				logrus.Fatal(`--grafana_cloud_id must be set.`)
+			}
+			if opt.GrafanaCloudAPIKey == "" {
+				logrus.Fatal(`-grafana_cloud_api_key must be set.`)
+			}
+			if opt.GrafanaCloudEndpoint == "" {
+				logrus.Fatal(`--grafana_cloud_endpoint must be set.`)
+			}
+			if opt.Environment == "" {
+				opt.Environment = "dev"
 			}
 
 			lbNames := args[1:]

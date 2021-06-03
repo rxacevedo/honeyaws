@@ -1,9 +1,14 @@
 package publisher
 
 import (
+	"bytes"
+	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"net/http"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -39,8 +44,7 @@ log_format %s '$type $response_time $elb $client_authority $backend_authority $r
 		AWSCloudFrontWebFormat,
 		AWSApplicationLoadBalancerFormat,
 	))
-	libhoneyInitialized = false
-	formatFileName      string
+	formatFileName string
 )
 
 func init() {
@@ -101,26 +105,10 @@ func NewHoneycombPublisher(opt *options.Options, stater state.Stater, eventParse
 		FinishedObjects: make(chan string),
 	}
 
-	if !libhoneyInitialized {
-		hnyCfg := libhoney.Config{
-			MaxBatchSize:  500,
-			SendFrequency: 100 * time.Millisecond,
-			WriteKey:      opt.WriteKey,
-			Dataset:       opt.Dataset,
-			SampleRate:    uint(opt.SampleRate),
-			APIHost:       opt.APIHost,
-		}
-		libhoney.Init(hnyCfg)
-		libhoneyInitialized = true
-		if _, err := libhoney.VerifyAPIKey(hnyCfg); err != nil {
-			logrus.Fatal("Could not validate write key Honeycomb. Please double check your write key and try again.")
-		}
-	}
-
 	hp.parsedCh = make(chan event.Event)
 	hp.sampledCh = make(chan event.Event)
 
-	go sendEventsToHoneycomb(hp.sampledCh, opt.EdgeMode)
+	go sendEventsToHoneycomb(hp.sampledCh, opt.EdgeMode, opt.GrafanaCloudID, opt.GrafanaCloudEndpoint, opt.GrafanaCloudAPIKey, opt.Environment)
 	go hp.EventParser.DynSample(hp.parsedCh, hp.sampledCh)
 
 	return hp
@@ -226,27 +214,50 @@ func addTraceData(ev *event.Event, edgeMode bool) {
 	ev.Data["request.headers.x-amzn-trace-id"] = amznTraceID
 }
 
-func sendEventsToHoneycomb(in <-chan event.Event, edgeMode bool) {
+type Streams struct {
+	Streams []Stream `json:"streams"`
+}
+
+type Stream struct {
+	Stream map[string]string `json:"stream"`
+	Values []interface{}     `json:"values"`
+}
+
+func basicAuth(username, password string) string {
+	auth := username + ":" + password
+	return base64.StdEncoding.EncodeToString([]byte(auth))
+}
+
+func sendEventsToHoneycomb(in <-chan event.Event, edgeMode bool, grafanaID string, grafanaEndpoint string, grafanaAPIKey string, environment string) {
 	shaper := requestShaper{&urlshaper.Parser{}}
 	for ev := range in {
 		shaper.Shape("request", &ev)
-		libhEv := libhoney.NewEvent()
-		libhEv.Timestamp = ev.Timestamp
-		libhEv.SampleRate = uint(ev.SampleRate)
 		dropNegativeTimes(&ev)
 		addTraceData(&ev, edgeMode)
-		if err := libhEv.Add(ev.Data); err != nil {
-			logrus.WithFields(logrus.Fields{
-				"event": ev,
-				"error": err,
-			}).Error("Unexpected error adding data to libhoney event")
+		data, err := json.Marshal(ev.Data)
+		if err != nil {
+			logrus.Error(err)
 		}
-		// sampling is handled by the nginx parser
-		if err := libhEv.SendPresampled(); err != nil {
-			logrus.WithFields(logrus.Fields{
-				"event": ev,
-				"error": err,
-			}).Error("Unexpected error event to libhoney send")
+
+		jsonPayload := Streams{
+			Streams: []Stream{
+				Stream{
+					Stream: map[string]string{"environment": environment, "service": "honeyaws", "aws_elb": fmt.Sprintf("%v", ev.Data["elb"])},
+					Values: []interface{}{[]string{strconv.FormatInt(ev.Timestamp.UnixNano(), 10), string(data)}},
+				},
+			},
+		}
+		b, _ := json.Marshal(jsonPayload)
+		req, err := http.NewRequest("POST", grafanaEndpoint, bytes.NewBuffer(b))
+		if err != nil {
+			logrus.Error(err)
+		}
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Add("Authorization", "Basic "+basicAuth(grafanaID, grafanaAPIKey))
+		client := &http.Client{}
+		_, err = client.Do(req)
+		if err != nil {
+			logrus.Error(err)
 		}
 	}
 }

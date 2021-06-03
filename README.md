@@ -1,5 +1,30 @@
 ## Honeycomb AWS Bundle [![CircleCI](https://circleci.com/gh/honeycombio/honeyaws.svg?style=svg)](https://circleci.com/gh/honeycombio/honeyaws)
 
+This is a fork of Honeycomb AWS Bundle. We've changed how the publisher works, to send the logs to Grafana Cloud (Loki) instead of Honeycomb.
+
+Right now, only `honeyalb` works. The other tools may be updated in the future.
+
+Keep in mind that is a bit experimental! Expect changes :)
+
+**Usage:**
+
+> Note: Ensure that IAM credentials are properly provided
+
+To list ALBs:
+```
+> ./honeyalb ls
+order-alb
+ship-alb
+quotes-alb
+```
+
+To collect logs for some ALB:
+```
+> ./honeyalb ingest quotes-alb --grafana_cloud_id=<your-id> --grafana_cloud_api_key=<your-api-key> --grafana_cloud_endpoint=<your-endpoint>
+```
+
+#### Original README ↓↓↓↓
+
 `honeyaws` is a collection of programs to send events from your AWS
 infrastructure into [Honeycomb](https://www.honeycomb.io/), a service
 for debugging your software in production.
