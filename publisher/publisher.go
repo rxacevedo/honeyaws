@@ -233,7 +233,7 @@ func sendEventsToHoneycomb(in <-chan event.Event, edgeMode bool, grafanaID strin
 	for ev := range in {
 		shaper.Shape("request", &ev)
 		dropNegativeTimes(&ev)
-		addTraceData(&ev, edgeMode)
+		//addTraceData(&ev, edgeMode)
 		data, err := json.Marshal(ev.Data)
 		if err != nil {
 			logrus.Error(err)
