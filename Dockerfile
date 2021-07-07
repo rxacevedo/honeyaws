@@ -33,4 +33,4 @@ FROM scratch
 COPY --from=builder /dist/honeyalb /tmp/honeyalb
 
 # Command to run
-ENTRYPOINT ["/tmp/honeyalb"]
+ENTRYPOINT ["/tmp/honeyalb","ingest"]
