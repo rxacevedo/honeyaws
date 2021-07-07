@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"net/http"
 	"os"
 	"os/signal"
 	"time"
@@ -15,6 +16,7 @@ import (
 	"github.com/honeycombio/honeyaws/state"
 	libhoney "github.com/honeycombio/libhoney-go"
 	flag "github.com/jessevdk/go-flags"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/sirupsen/logrus"
 )
 
@@ -176,6 +178,12 @@ http://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer
 			go func() {
 				<-signalCh
 				logrus.Fatal("Exiting due to interrupt.")
+			}()
+
+			// Prometheus metrics
+			go func() {
+				http.Handle("/metrics", promhttp.Handler())
+				http.ListenAndServe(":2112", nil)
 			}()
 
 			for {
