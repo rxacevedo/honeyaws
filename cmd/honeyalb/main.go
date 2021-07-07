@@ -63,17 +63,30 @@ func cmdALB(args []string) error {
 			return nil
 
 		case "ingest":
+			var ok bool
 			if opt.GrafanaCloudID == "" {
-				logrus.Fatal(`--grafana_cloud_id must be set.`)
+				opt.GrafanaCloudID, ok = os.LookupEnv("GRAFANA_CLOUD_ID")
+				if !ok {
+					logrus.Fatal(`--grafana_cloud_id or env var GRAFANA_CLOUD_ID must be set.`)
+				}
 			}
 			if opt.GrafanaCloudAPIKey == "" {
-				logrus.Fatal(`-grafana_cloud_api_key must be set.`)
+				opt.GrafanaCloudAPIKey, ok = os.LookupEnv("GRAFANA_CLOUD_API_KEY")
+				if !ok {
+					logrus.Fatal(`-grafana_cloud_api_key or env var GRAFANA_CLOUD_API_KEY must be set.`)
+				}
 			}
 			if opt.GrafanaCloudEndpoint == "" {
-				logrus.Fatal(`--grafana_cloud_endpoint must be set.`)
+				opt.GrafanaCloudEndpoint, ok = os.LookupEnv("GRAFANA_CLOUD_ENDPOINT")
+				if !ok {
+					logrus.Fatal(`--grafana_cloud_endpoint or env var GRAFANA_CLOUD_ENDPOINT must be set.`)
+				}
 			}
 			if opt.Environment == "" {
-				opt.Environment = "dev"
+				opt.Environment, ok = os.LookupEnv("ENVIRONMENT")
+				if !ok {
+					opt.Environment = "dev"
+				}
 			}
 
 			lbNames := args[1:]
@@ -151,13 +164,10 @@ func cmdALB(args []string) error {
 				}
 
 				if !enabled {
-					fmt.Fprintf(os.Stderr, `Access logs are not configured for ALB %q. Please enable them to use the ingest tool.
-
-For reference see this link:
-
-http://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-access-logs.html#enable-access-logging
-`, lbName)
-					os.Exit(1)
+					logrus.WithFields(logrus.Fields{
+						"lbName": lbName,
+					}).Warning("Access logs not enabled for ALB")
+					continue
 				}
 				logrus.WithFields(logrus.Fields{
 					"bucket": bucketName,
