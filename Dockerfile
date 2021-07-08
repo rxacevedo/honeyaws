@@ -33,6 +33,7 @@ RUN cp /build/honeyalb .
 FROM scratch
 
 COPY --from=builder /dist/honeyalb /tmp/honeyalb
+COPY --from=alpine /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 
 # Command to run
 ENTRYPOINT ["/tmp/honeyalb","ingest"]
