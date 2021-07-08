@@ -1,7 +1,7 @@
 # Source: https://levelup.gitconnected.com/complete-guide-to-create-docker-container-for-your-golang-application-80f3fb59a15e
 FROM golang:1.15.6-alpine AS builder
 
-RUN apk update && apk add ca-certificates && rm -rf /var/cache/apk/*
+RUN apk add -U --no-cache ca-certificates
 
 # Set necessary environmet variables needed for our image
 ENV GO111MODULE=on \
