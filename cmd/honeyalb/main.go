@@ -82,7 +82,7 @@ func cmdALB(args []string) error {
 					logrus.Fatal(`--grafana_cloud_endpoint or env var GRAFANA_CLOUD_ENDPOINT must be set.`)
 				}
 			}
-			if opt.Environment == "" {
+			if opt.Environment == "" || opt.Environment == "dev" {
 				opt.Environment, ok = os.LookupEnv("ENVIRONMENT")
 				if !ok {
 					opt.Environment = "dev"
@@ -166,12 +166,14 @@ func cmdALB(args []string) error {
 				if !enabled {
 					logrus.WithFields(logrus.Fields{
 						"lbName": lbName,
+						"env":    opt.Environment,
 					}).Warning("Access logs not enabled for ALB")
 					continue
 				}
 				logrus.WithFields(logrus.Fields{
 					"bucket": bucketName,
 					"lbName": lbName,
+					"env":    opt.Environment,
 				}).Info("Access logs are enabled for ALB ♥")
 
 				albDownloader := logbucket.NewALBDownloader(sess, bucketName, bucketPrefix, lbName)
