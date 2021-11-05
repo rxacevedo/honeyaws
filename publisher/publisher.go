@@ -253,7 +253,8 @@ func sendEventsToHoneycomb(in <-chan event.Event, edgeMode bool, grafanaID strin
 			logrus.Error(err)
 		}
 		req.Header.Set("Content-Type", "application/json")
-		req.Header.Add("Authorization", "Basic "+basicAuth(grafanaID, grafanaAPIKey))
+		// TODO: Put an auth proxy in front of Loki that shoves the basicAuth username into the X-Scope-OrgID header
+		req.Header.Add("X-Scope-OrgID", grafanaID)
 		client := &http.Client{}
 		_, err = client.Do(req)
 		if err != nil {
